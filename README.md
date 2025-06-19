@@ -1,54 +1,114 @@
-# React + TypeScript + Vite
+# SyncNest
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Overview
 
-## Expanding the ESLint configuration
+SyncNest is a desktop application for watching local media (MP4s, series, etc.) in perfect sync with friends or family, no matter where they are. It enables:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🔁 **File Fingerprint Matching** using SHA-256 to ensure both users have the same file
+- 📺 **Real-Time Synchronized Playback** (play, pause, seek) via Socket.IO or optional WebRTC
+- 💬 **Live Chat & Emoji Reactions** alongside video playback
+- 🧠 **Smart Subtitle Sync** for `.srt` and `.vtt` files
+- 🎧 **Audio Drift Correction** to adjust for lag on long videos
+- 🔐 **Room & Session Codes** for secure, easy joining
+- 🌓 **Dark Mode & Themes** for personalized UI
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+> *Ideal for long-distance relationships, families, or friends who want a seamless "watch together" experience without streaming platform limitations.*
+
+## Tech Stack
+
+- **Frontend**: Electron + React (Vite + TypeScript)
+- **Backend**: Node.js + Socket.IO for signaling & sync
+- **P2P Option**: WebRTC DataChannels
+- **Packaging**: Electron Forge + `electron-builder`
+- **Hashing**: Node.js `crypto` module
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** (v18.x or higher) and **npm**
+- **Git**
+
+### Clone the repository
+
+```bash
+git clone https://github.com/moizmaj1k/syncnest.git
+cd syncnest
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm install
 ```
+
+### Running in development
+
+1. **Start Vite (React) server**
+   ```bash
+   npm run dev
+   ```
+2. **Start Electron with live reload**
+   ```bash
+   npm run dev:electron
+   ```
+
+> This will concurrently launch Vite, compile your Electron main process, and open the Electron window pointing at `http://localhost:5173`.
+
+### Build for production
+
+Compile both the Electron main process and Vite frontend:
+
+```bash
+npm run build
+```
+
+### Create desktop installers
+
+Use `electron-builder` to generate platform-specific packages. After building:
+
+- **Windows (x64)**
+  ```bash
+  npm run dist:win
+  ```
+- **macOS**
+  ```bash
+  npm run dist:mac
+  ```
+- **Linux (AppImage)**
+  ```bash
+  npm run dist:linux
+  ```
+
+Your installers and unpacked apps will appear under the `dist/` directory.
+
+---
+
+## Contributing
+
+1. Fork the repo and create a new branch:
+   ```bash
+   ```
+
+git checkout -b feat/awesome-feature
+
+````
+2. Commit your changes:
+```bash
+git commit -m "feat: add awesome-feature"
+````
+
+3. Push and open a Pull Request.
+
+Please follow the [Conventional Commits](https://www.conventionalcommits.org/) format.
+
+---
+
+## License
+
+This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for details.
+
