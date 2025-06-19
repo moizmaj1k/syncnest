@@ -92,15 +92,13 @@ Your installers and unpacked apps will appear under the `dist/` directory.
 
 1. Fork the repo and create a new branch:
    ```bash
+   git checkout -b feat/awesome-feature
    ```
 
-git checkout -b feat/awesome-feature
-
-````
 2. Commit your changes:
-```bash
-git commit -m "feat: add awesome-feature"
-````
+    ```bash
+    git commit -m "feat: add awesome-feature"
+    ```
 
 3. Push and open a Pull Request.
 
