@@ -1,0 +1,9 @@
+{
+  "extends": "./src/electron/tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",         // compile preload as CJS
+    "outDir": "./dist-electron",  // same output folder
+    "sourceMap": false
+  },
+  "include": ["src/electron/preload.ts"]
+}

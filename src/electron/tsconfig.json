@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "ESNext",
-    "module": "NodeNext",
-    "outDir": "../../dist-electron",
-    "lib": ["ES2020", "DOM"],
+    "target": "ES2020",                // you don’t need bleeding-edge ESNext here
+    "module": "ESNext",                // emit native ESM so it plays nicely under "type": "module"
+    "moduleResolution": "node",        // resolve imports like Node.js does
+    "esModuleInterop": true,           // allow `import fs from 'fs'` without flags
+    "outDir": "../../dist-electron",   // same as before
+    "lib": ["ES2020", "DOM"],          // DOM for preload, if you expose window APIs
     "skipLibCheck": true,
+    "sourceMap": true                  // handy for debugging
   },
+  "include": ["**/main.ts", "**/util.ts"]   // make sure TS picks up main.ts, preload.ts, util.ts
 }
