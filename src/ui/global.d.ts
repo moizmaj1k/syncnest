@@ -14,7 +14,17 @@ declare global {
        * Computes SHA‐256 on the given file path and returns the hex digest
        */
       computeHash(filePath: string): Promise<string>;
+
+      getFileInfo(fp: string): Promise<{
+        name: string;
+        size: number;
+        modified: number;
+      }>;
+
+      toFileURL(path:string): string;
     };
+
+
 
     /** Socket.IO client instance for sync events */
     socket: import('socket.io-client').Socket;

@@ -1,9 +1,13 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import path from 'path';
-import { fileURLToPath } from 'url';  
+import { fileURLToPath } from 'url';
 import { isDev } from './util.js';
 import { createHash } from 'crypto';
-import fs from 'fs';
+
+// Promise‐based fs functions
+import * as fsp from 'fs/promises';
+// Stream API for hashing
+import { createReadStream } from 'fs';
 
 // Polyfill __dirname & __filename for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -17,10 +21,10 @@ function createWindow() {
     height: 700,
     show: false,
     webPreferences: {
-      // alters where preload.js lives after build
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      webSecurity: false,
     },
   });
 
@@ -33,33 +37,16 @@ function createWindow() {
     );
   }
 
-  mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
-  });
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+  mainWindow.once('ready-to-show', () => mainWindow?.show());
+  mainWindow.on('closed', () => { mainWindow = null });
 }
 
 app.whenReady().then(createWindow);
-
-app.on('window-all-closed', () => {
-  // on macOS it’s common for apps to stay open until user quits explicitly
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', () => {
-  // re-create window on macOS dock-click
-  if (mainWindow === null) {
-    createWindow();
-  }
-});
+app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() });
+app.on('activate', () => { if (mainWindow === null) createWindow() });
 
 // -------------------------
-// IPC Handlers (unchanged)
+// IPC Handlers
 // -------------------------
 
 ipcMain.handle('dialog:selectFile', async () => {
@@ -71,11 +58,23 @@ ipcMain.handle('dialog:selectFile', async () => {
 });
 
 ipcMain.handle('hash:compute', (_e, filePath: string) => {
+  const hash = createHash('sha256');
   return new Promise<string>((resolve, reject) => {
-    const hash = createHash('sha256');
-    const stream = fs.createReadStream(filePath);
-    stream.on('data', (chunk) => hash.update(chunk));
-    stream.on('end', () => resolve(hash.digest('hex')));
-    stream.on('error', (err) => reject(err));
+    const stream = createReadStream(filePath);
+    // TypeScript will infer chunk as string | Buffer | Uint8Array, which `hash.update` accepts
+    stream.on('data', chunk => {
+      hash.update(chunk);
+    });
+    stream.once('end', () => resolve(hash.digest('hex')));
+    stream.once('error', err => reject(err));
   });
+});
+
+ipcMain.handle('file:info', async (_e, filePath: string) => {
+  const stats = await fsp.stat(filePath);
+  return {
+    name: path.basename(filePath),
+    size: stats.size,
+    modified: stats.mtimeMs,
+  };
 });
