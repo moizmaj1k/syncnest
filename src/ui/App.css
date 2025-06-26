@@ -3,6 +3,7 @@ html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;  
 }
 
 #root {
@@ -18,7 +19,7 @@ html, body, #root {
   flex-direction: column;
   align-items: center;       /* horizontal centering */
   justify-content: center;   /* vertical centering */
-  min-height: 100vh;         /* fill viewport */
+  height: 100%;
   width: 100%;
   padding: 2rem;
   box-sizing: border-box;
@@ -83,6 +84,9 @@ html, body, #root {
   align-items: center;
 }
 
+
+
+
 .primary {
   background: #0078d4;
   color: white;
@@ -100,9 +104,11 @@ html, body, #root {
 
 .join {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;     /* side by side */
+  align-items: center;     /* vertically centered */
+  gap: 1rem;               /* spacing between input and button */
 }
+
 
 .room-input {
   padding: 0.5rem;
@@ -122,4 +128,34 @@ html, body, #root {
   color: #d04545;
   font-size: 0.9rem;
   margin-top: 0.3rem;
+}
+
+
+/* Style the room‐code line and copy button */
+.room-code {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.copy-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.1s;
+}
+
+.copy-button:hover {
+  transform: scale(1.2);
+}
+
+.copied-feedback {
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+  color: #4BB543; /* green */
 }
