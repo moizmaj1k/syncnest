@@ -40,6 +40,16 @@ export default function App() {
     setStep('lobby');
   }
 
+  /** leave the current room and go back to lobby */
+  function leaveRoom() {
+    if (socket && roomId) {
+      // tell server we’re out
+      socket.emit('room:leave', roomId);
+    }
+    // show the lobby again
+    setStep('lobby');
+  }
+
   // Create room as host
   function createRoom() {
     if (!socket) {
@@ -139,7 +149,13 @@ export default function App() {
                 {isHost && (
                   <button
                     className="primary"
-                    onClick={() => setStep('play')}
+                    onClick={() => {
+                      // re-fetch peers before mounting VideoPlayer…
+                      socket?.emit('room:getPeers', roomId, () => {
+                        // no-op
+                      });
+                      setStep('play');
+                    }}
                   >
                     ▶️ Start Playback
                   </button>
@@ -183,6 +199,7 @@ export default function App() {
           filePath={filePath}
           roomId={roomId}
           isHost={isHost}
+          onLeave={leaveRoom}
         />
       )}
 
