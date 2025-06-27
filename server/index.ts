@@ -38,16 +38,20 @@ io.on('connection', socket => {
   });
 
   socket.on('room:join', (roomId, hash, cb) => {
-    const room = rooms.get(roomId);
-    if (!room) return cb({ error: 'Not found' });
-    if (room.hash !== hash) return cb({ error: 'Hash mismatch' });
+    const room = rooms.get(roomId)
+    if (!room)    return cb({ error: 'Not found' })
+    if (room.hash !== hash) return cb({ error: 'Hash mismatch' })
 
-    socket.join(roomId);
+    // if this socket used to be the host, make it host again
+    if (socket.id === room.hostId || /* or you can choose always reassign */ true) {
+      room.hostId = socket.id
+    }
 
-    // broadcast updated size
-    io.to(roomId).emit('peer:update', getRoomSize(roomId));
-    cb({ success: true });
-  });
+    socket.join(roomId)
+    // broadcast updated peer count
+    io.to(roomId).emit('peer:update', getRoomSize(roomId))
+    cb({ success: true })
+  })
 
   // client explicitly wants to leave this room
   socket.on('room:leave', (roomId: string) => {
@@ -55,6 +59,24 @@ io.on('connection', socket => {
     // broadcast the new room size
     io.to(roomId).emit('peer:update', getRoomSize(roomId));
   });
+
+  // // Host tells us “hey—I'm back, please make me the host on this room again”
+  // socket.on(
+  //   'room:rejoin-host',
+  //   (roomId: string, hash: string, cb: (res: { success?: true; error?: string }) => void) => {
+  //     const room = rooms.get(roomId)
+  //     if (!room) return cb({ error: 'Room not found' })
+  //     if (room.hash !== hash) return cb({ error: 'File-hash mismatch' })
+
+  //     // reassign hostId to this new socket
+  //     room.hostId = socket.id
+  //     socket.join(roomId)
+  //     // broadcast new peer count
+  //     io.to(roomId).emit('peer:update', getRoomSize(roomId))
+
+  //     return cb({ success: true })
+  //   }
+  // )
 
   socket.on('disconnecting', () => {
     for (const r of socket.rooms) {

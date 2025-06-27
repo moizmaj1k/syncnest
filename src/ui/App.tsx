@@ -18,6 +18,7 @@ export default function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [copied, setCopied] = useState(false);
   const [isHost, setIsHost] = useState(false);
+  const [hasJoined, setHasJoined] = useState(false);
 
   // init socket
   useEffect(() => {
@@ -94,6 +95,28 @@ export default function App() {
      }
    }
 
+    function rejoinAsHost() {
+      console.log('Rejoining as host:', roomId, hash)
+      if (!socket || !roomId) return
+
+      socket.emit(
+        'room:join',
+        roomId,
+        hash,
+        (res: { success?: true; error?: string }) => {
+          console.log('room:join callback', res)
+          if (res.error) {
+            setError(res.error)
+          } else {
+            // mark yourself host again (in case you lost that flag)
+            setIsHost(true)
+            setStep('play')
+          }
+        }
+      )
+    }
+
+
 
   return (
   <div className="app-container">
@@ -150,12 +173,14 @@ export default function App() {
                   <button
                     className="primary"
                     onClick={() => {
-                      // re-fetch peers before mounting VideoPlayer…
-                      socket?.emit('room:getPeers', roomId, () => {
-                        // no-op
-                      });
-                      setStep('play');
+                      if (!hasJoined) {
+                        setHasJoined(true)
+                        setStep('play')
+                      } else {
+                        rejoinAsHost()
+                      }
                     }}
+                    disabled={!socket || !roomId}
                   >
                     ▶️ Start Playback
                   </button>
